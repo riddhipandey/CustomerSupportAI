@@ -3,6 +3,7 @@ import logging
 
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
+from cache.embedding_cache import EmbeddingCache
 
 
 load_dotenv()
@@ -15,22 +16,27 @@ class EmbeddingService:
             api_key = os.getenv("OPENAI_API_KEY")
         )
 
-        self.cache = {}
+        self.cache = EmbeddingCache()
+        self.cache.load()
 
     async def get_embedding(self, text : str):
 
-        if text in self.cache:
-            logger.info("CACHE HIT")
-            return self.cache[text]
+        cached_embedding = self.cache.get(text=text)
 
-        logger.info("CACHE MISS - CALLING OPENAI")
+        if cached_embedding is not None:
+            logger.info("Embedding CACHE HIT")
+            return cached_embedding
+
+        logger.info("Embedding cache MISS - calling OpenAI")
+
         response = await self.client.embeddings.create(
             model="text-embedding-3-small",
             input=text
         )
 
         embedding = response.data[0].embedding
-        self.cache[text] = embedding
+
+        self.cache.set(text,embedding)
 
         return embedding
 

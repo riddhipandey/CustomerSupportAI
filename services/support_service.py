@@ -17,7 +17,7 @@ class SupportService:
 
     async def ask(self, question : str):
         query_embedding = await self.embedding_service.get_embedding(question)
-        relevant_documents = await self.vector_repository.search_similar(query_embedding, top_k=8)
+        relevant_documents = await self.vector_repository.search_similar(query_embedding, question, top_k=3)
 
         # print("Question:", question)
         # print("Query embedding:", query_embedding)
