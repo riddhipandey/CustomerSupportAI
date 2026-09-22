@@ -1,4 +1,8 @@
 import re
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 class ChunkingService:
 
@@ -10,6 +14,8 @@ class ChunkingService:
             document_id : str, 
             chunk_size=100, 
             overlap=20):
+
+        logger.info(f"Starting chunk creation for document: {document_name}")
 
         chunks = []
         chunk_index = 0
@@ -75,5 +81,6 @@ class ChunkingService:
         #     section.strip()
         #     for section in sections if section.strip() and re.match(r"\d+\.\s+", section.strip())
         # ]
-
+        logger.info(f"Chunk creation completed. Total chunks: {len(chunks)}")
+        
         return chunks

@@ -10,18 +10,37 @@ class VectorRepository:
     async def get_all(self):
         return self.records
 
-    async def search_similar(self, query_embedding, top_k = 4):
+    async def search_similar(self, query_embedding, question, top_k = 4):
         # best_record = None
         # best_score = -1
         results = []
+        stop_words = {
+                    "when", "will", "my", "the", "is",
+                    "a", "an", "to", "of", "in", "for"
+                }
+        words = question.lower().split()
 
+        keywords = [
+            word.strip(".,?!")
+            for word in words
+            if word not in stop_words
+        ]
+        
         query_magnitude = math.sqrt(
                         sum(q * q for q in query_embedding)
                     )
         
         for record in self.records:
             document_embedding = record["embedding"]
-            document_text = record["text"]
+            document_text = record["text"].lower()
+
+            keyword_score = sum(
+                1 for word in keywords
+                if word in document_text
+            )
+            keyword_score = keyword_score / len(keywords) if keywords else 0
+
+            print("Keyword score:", keyword_score)
 
             dot_product = sum(
                 q * d
@@ -48,16 +67,21 @@ class VectorRepository:
             print("Document:", record["metadata"]["section"])
             print("Similarity:", similarity)
 
+            final_score = (0.7 * similarity) + (0.3 * keyword_score)
+            print("Final score:", final_score)
+
             if similarity >= .30:
                 results.append({
                     "text" :record["text"],
                     "embedding" : record["embedding"],
                     "metadata" : record["metadata"],
-                    "similarity" : similarity
+                    "similarity" : similarity,
+                    "keyword_score": keyword_score,
+                    "final_score": final_score
                 })
 
         results.sort(
-            key=lambda x:x["similarity"],
+            key=lambda x:x["final_score"],
             reverse=True
         )
 
