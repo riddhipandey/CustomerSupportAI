@@ -64,11 +64,11 @@ class VectorRepository:
             # print("Document:", document_embedding)
             # print("Document:", document_text)
             # print("Similarity:", similarity)   
-            print("Document:", record["metadata"]["section"])
-            print("Similarity:", similarity)
+            # print("Document:", record["metadata"]["section"])
+            # print("Similarity:", similarity)
 
             final_score = (0.7 * similarity) + (0.3 * keyword_score)
-            print("Final score:", final_score)
+            # print("Final score:", final_score)
 
             if similarity >= .30:
                 results.append({
