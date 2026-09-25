@@ -21,22 +21,27 @@ chunking_Service = ChunkingService()
 async def lifespan(app : FastAPI):
     # document_records = await document_service.get_document_embeddings()
     # print(document_records)
-    print("application is starting")
 
-    pages = pdf_service.extract_pdf_text(
-        "data/sample_shipping_policy.pdf"
-    )
+    # pages = pdf_service.extract_pdf_text(
+    #     "data/sample_shipping_policy.pdf"
+    # )
 
-    # chunking_text = "\n".join(page["text"] for page in pages)
-    chunks = chunking_Service.create_chunks(pages,"sample_shipping_policy.pdf", "Standard Corporate Shipping Policy", "POL-SHP-2026-V1")
-    document_records = await document_service.get_document_embeddings(chunks=chunks)
+    # # chunking_text = "\n".join(page["text"] for page in pages)
+    # chunks = chunking_Service.create_chunks(pages,"sample_shipping_policy.pdf", "Standard Corporate Shipping Policy", "POL-SHP-2026-V1")
+    # document_records = await document_service.get_document_embeddings(chunks=chunks)
     # for record in document_records:
     #     print(record)
 
     # for i, chunk in enumerate(chunks):
     #     print(f"\n---Chunk {i+1} ---")
     #     print(chunk)
+    
+    
+    
+    print("application startup complete")
 
+    await initialize_documents()
+    
     yield
     #print only after application stops just before stoping.
     print("application shutting down")
@@ -44,3 +49,21 @@ async def lifespan(app : FastAPI):
 
 app = FastAPI(lifespan = lifespan)
 app.include_router(support_router)
+
+
+async def initialize_documents():
+
+    pages = pdf_service.extract_pdf_text(
+        "data/sample_shipping_policy.pdf"
+    )
+
+    chunks = chunking_Service.create_chunks(
+        pages,
+        "sample_shipping_policy.pdf",
+        "Standard Corporate Shipping Policy",
+        "POL-SHP-2026-V1"
+    )
+
+    await document_service.get_document_embeddings(
+        chunks=chunks
+    )
