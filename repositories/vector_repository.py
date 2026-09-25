@@ -40,7 +40,7 @@ class VectorRepository:
             )
             keyword_score = keyword_score / len(keywords) if keywords else 0
 
-            print("Keyword score:", keyword_score)
+            # print("Keyword score:", keyword_score)
 
             dot_product = sum(
                 q * d

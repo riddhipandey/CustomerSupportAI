@@ -29,6 +29,13 @@ def get_document_service():
         embedding_service,
         vector_repository
     )
+
+def get_query_rewriter_service():
+    return query_rewriter_service
+
+def get_reranker_service():
+    return reranker_service
+
 def get_support_service():
     return SupportService(
         llm_service,
